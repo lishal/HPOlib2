@@ -3,8 +3,6 @@ import os
 
 import numpy as np
 import openml
-
-from scipy.sparse.csr import csr_matrix
 from sklearn.cross_validation import train_test_split
 
 import hpolib
@@ -44,6 +42,8 @@ def _load_data(task_id):
     X_test = X[test_indices]
     y_test = y[test_indices]
 
+    # TODO replace by more efficient function which only reads in the data
+    # saved in the arff file describing the attributes/features
     dataset = task.get_dataset()
     _, _, categorical_indicator = dataset.get_data(
         target=task.target_name,
@@ -113,8 +113,7 @@ class OpenMLHoldoutDataManager(HoldoutDataManager):
 class OpenMLCrossvalidationDataManager(CrossvalidationDataManager):
     def __init__(self, openml_task_id, rng=None):
 
-        super().__init__()
-
+        self.logger = logging.getLogger("DataManager")
         self.save_to = os.path.join(hpolib._config.data_dir, "OpenML")
         self.task_id = openml_task_id
 
