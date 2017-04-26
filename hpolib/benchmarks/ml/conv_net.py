@@ -247,7 +247,7 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
 
 class ConvolutionalNeuralNetworkOnCIFAR10(ConvolutionalNeuralNetwork):
 
-    def get_data(self):
+    def get_data(self,path=None):
         dm = CIFAR10Data()
         return dm.load()
 

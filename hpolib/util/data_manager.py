@@ -181,6 +181,7 @@ class CIFAR10Data(DataManager):
 
         x = np.concatenate(xs) / np.float32(255)
         y = np.concatenate(ys)
+        y = y.astype(np.int32)
         x = np.dstack((x[:, :1024], x[:, 1024:2048], x[:, 2048:]))
         x = x.reshape((x.shape[0], 32, 32, 3)).transpose(0, 3, 1, 2)
 
