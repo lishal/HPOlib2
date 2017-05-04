@@ -39,12 +39,12 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
     @AbstractBenchmark._check_configuration
     @AbstractBenchmark._configuration_as_array
     def objective_function(self, x, steps=1, dataset_fraction=1, **kwargs):
-
         num_epochs = int(1 + (self.max_num_epochs - 1) * steps)
 
         # Shuffle training data
         shuffle = self.rng.permutation(self.train.shape[0])
         size = int(dataset_fraction * self.train.shape[0])
+        print("training configuration: ",x," on sample size: ",size)
 
         # Split of dataset subset
         train = self.train[shuffle[:size]]
@@ -61,6 +61,7 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
 
         y = lc_curve[-1]
         c = cost_curve[-1]
+        print("achieved validation error of ",y," after duration of ",c)
         return {'function_value': y,
                 "cost": c,
                 "train_loss": train_loss,
@@ -71,9 +72,9 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
     @AbstractBenchmark._check_configuration
     @AbstractBenchmark._configuration_as_array
     def objective_function_test(self, x, steps=1, **kwargs):
-
         num_epochs = int(1 + (self.max_num_epochs - 1) * steps)
 
+        print("training configuration: ",x," on combined training and validation")
         train = np.concatenate((self.train, self.valid))
         train_targets = np.concatenate((self.train_targets, self.valid_targets))
         lc_curve, cost_curve, train_loss, valid_loss = self.train_net(train, train_targets,
@@ -86,6 +87,7 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
                                                                       num_epochs=num_epochs)
         y = lc_curve[-1]
         c = cost_curve[-1]
+        print("achieved validation error of ",y," after duration of ",c)
         return {'function_value': y,
                 "cost": c,
                 "train_loss": train_loss,
@@ -232,10 +234,10 @@ class ConvolutionalNeuralNetwork(AbstractBenchmark):
                 val_acc += acc
                 val_batches += 1
 
-            print("Epoch {} of {} took {:.3f}s".format(e + 1, num_epochs, time.time() - epoch_start_time))
-            print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
-            print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
-            print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batches * 100))
+            #print("Epoch {} of {} took {:.3f}s".format(e + 1, num_epochs, time.time() - epoch_start_time))
+            #print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
+            #print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
+            #print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batches * 100))
 
             learning_curve[e] = 1 - val_acc / val_batches
             cost[e] = time.time() - start_time

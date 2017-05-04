@@ -7,6 +7,7 @@ import ConfigSpace as CS
 
 from hpolib.abstract_benchmark import AbstractBenchmark
 import hpolib.util.data_manager
+import hpolib.util.openml_data_manager
 import hpolib
 
 
@@ -58,6 +59,7 @@ class SupportVectorMachine(AbstractBenchmark):
         shuffle = self.rng.permutation(self.train.shape[0])
         size = int(dataset_fraction * self.train.shape[0])
 
+        print("training configuration: ",x," on sample size: ",size)
         # Split of dataset subset
         train = self.train[shuffle[:size]]
         train_targets = self.train_targets[shuffle[:size]]
@@ -74,6 +76,7 @@ class SupportVectorMachine(AbstractBenchmark):
         y = 1 - clf.score(self.valid, self.valid_targets)
         c = time.time() - start_time
 
+        print("achieved validation error of ",y," after duration of ",c)
         return {'function_value': y, "cost": c}
     
     @AbstractBenchmark._check_configuration
@@ -81,6 +84,7 @@ class SupportVectorMachine(AbstractBenchmark):
     def objective_function_test(self, x, **kwargs):
         start_time = time.time()
 
+        print("training configuration: ",x," on combined training and validation")
         # Concatenate training and validation dataset
         train = np.concatenate((self.train, self.valid))
         train_targets = np.concatenate((self.train_targets, self.valid_targets))
@@ -97,6 +101,7 @@ class SupportVectorMachine(AbstractBenchmark):
         y = 1 - clf.score(self.test, self.test_targets)
         c = time.time() - start_time
 
+        print("achieved validation error of ",y," after duration of ",c)
         return {'function_value': y, "cost": c}
 
     @staticmethod
@@ -143,12 +148,12 @@ class SvmOnMnist(SupportVectorMachine):
 class SvmOnVehicle(SupportVectorMachine):
 
     def get_data(self):
-        dm = hpolib.util.data_manager.OpenMLData(openml_task_id=75191)
+        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75191)
         return dm.load()
 
 
 class SvmOnCovertype(SupportVectorMachine):
 
     def get_data(self):
-        dm = hpolib.util.data_manager.OpenMLData(openml_task_id=75191)
+        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75191)
         return dm.load()
