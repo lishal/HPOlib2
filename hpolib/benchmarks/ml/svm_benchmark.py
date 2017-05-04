@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 from sklearn import svm
-
+import scipy.sparse as sps
 import ConfigSpace as CS
 
 from hpolib.abstract_benchmark import AbstractBenchmark
@@ -83,10 +83,15 @@ class SupportVectorMachine(AbstractBenchmark):
     @AbstractBenchmark._configuration_as_array
     def objective_function_test(self, x, **kwargs):
         start_time = time.time()
-
+        print(self.train.shape,self.valid.shape)
         print("training configuration: ",x," on combined training and validation")
         # Concatenate training and validation dataset
-        train = np.concatenate((self.train, self.valid))
+        if sps.issparse(self.train):
+            dt = self.train.toarray()
+            dv = self.valid.toarray()
+            train = sps.csr_matrix(np.concatenate((dt,dv)))
+        else:
+            train = np.concatenate((self.train, self.valid),axis=0)
         train_targets = np.concatenate((self.train_targets, self.valid_targets))
 
         # Transform hyperparameters to linear scale
@@ -155,5 +160,5 @@ class SvmOnVehicle(SupportVectorMachine):
 class SvmOnCovertype(SupportVectorMachine):
 
     def get_data(self):
-        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75191)
+        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75164)
         return dm.load()
