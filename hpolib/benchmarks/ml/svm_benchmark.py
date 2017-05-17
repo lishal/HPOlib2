@@ -153,7 +153,8 @@ class SvmOnMnist(SupportVectorMachine):
 class SvmOnVehicle(SupportVectorMachine):
 
     def get_data(self):
-        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75191)
+        #used to be 75191 which was incorrect
+        dm = hpolib.util.openml_data_manager.OpenMLData(openml_task_id=75145)
         return dm.load()
 
 
